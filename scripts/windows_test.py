@@ -26,8 +26,10 @@ with tempfile.TemporaryDirectory(prefix='aide desktop fixture ') as tmp:
   assert not json.loads(denied.stdout)['ok']
   result=request('inspect');assert 'fixture-password-secret' not in json.dumps(result)
   assert 'fixture initial' in json.dumps(result),result
+  editor=next(c for c in result['controls'] if c.get('text')=='fixture initial')
+  point={k:int(round(editor['center'][k])) for k in ('x','y')}
   result=request('snapshot');assert base64.b64decode(result['imageBase64']).startswith(b'\x89PNG\r\n\x1a\n')
-  request('click',x=data['x'],y=data['y'],approved=True)
+  request('click',x=point['x'],y=point['y'],approved=True)
   request('type',text=' 中文 Ω',approved=True)
   for _ in range(50):
    if '中文 Ω' in state()['text']:break
