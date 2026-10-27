@@ -11,7 +11,7 @@ with tempfile.TemporaryDirectory(prefix='aide desktop fixture ') as tmp:
  time.sleep(1)
  def state():
   for _ in range(50):
-   try:return json.loads(info.read_text())
+   try:return json.loads(info.read_text(encoding='utf-8-sig'))
    except (OSError,ValueError):time.sleep(.1)
   raise AssertionError('Fixture did not start in an interactive desktop')
  def request(action,**extra):
