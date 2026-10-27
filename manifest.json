@@ -2,11 +2,11 @@
   "id": "computer-control",
   "name": "电脑控制",
   "description": "读取允许应用窗口的截图和辅助功能控件；独立 Aide Computer Bridge 提供权限入口，点击、输入和按键仍需 Aide 确认",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "author": "aide",
   "main": "index.js",
   "enabled": false,
-  "settingsSchema":   {
+  "settingsSchema": {
     "type": "object",
     "title": "电脑控制参数",
     "properties": {
@@ -17,7 +17,7 @@
           "type": "string"
         },
         "default": [],
-        "description": "每行填写一个应用名称。点击、输入与按键仍须逐次确认。"
+        "description": "macOS 填应用名；Windows 填前台应用进程名，例如 notepad、msedge（可带 .exe）。点击、输入与按键仍须逐次确认。"
       }
     },
     "additionalProperties": true

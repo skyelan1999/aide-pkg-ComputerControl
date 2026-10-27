@@ -1,3 +1,10 @@
+# 1.2.0
+
+- Native Windows host for Windows 10/11 and interactive Server 2016+, with AMD64/386/ARM64 transports. No PowerShell dependency.
+- Foreground-window capture, UI Automation inspection excluding passwords, scoped clicks, Unicode input and limited keys; retain Aide confirmation.
+- Explicit local pairing, bounded authenticated HTTP, session/integrity restrictions, and isolated native-window CI coverage.
+- See docs/windows.md and release-verification.json for exact tested and untested environments.
+
 # Changelog
 
 ## 1.1.0

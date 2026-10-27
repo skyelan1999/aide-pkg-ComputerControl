@@ -1,6 +1,12 @@
+# Computer Control 1.2.0 — macOS / Windows
+
+Windows 原生桥接已加入，完整配置和版本兼容边界见 [Windows 安装说明](docs/windows.md)。无需 PowerShell；用户下载预编译宿主 ZIP，开发者才需要编译工具。macOS 仍使用原有独立原生桥接。
+
+> 以下 1.1.0 记录保留为历史基线；其中“Windows 未提供桥接”的描述仅适用于 1.1.0，不代表 1.2.0。
+
 # Computer Control · Aide 电脑控制
 
-Aide `computer-control` 插件的独立分发仓库，版本 **1.1.0**，MIT 许可。运行代码和安装 ZIP 与[原市场来源](https://github.com/skyelan1999/aide/tree/4dc9a7b0b01fef6ac3550b0b0fcf97db42d45f94/plugins/computer-control)一致。
+Aide `computer-control` 插件的独立分发仓库，版本 **1.2.0**，MIT 许可。运行代码和安装 ZIP 与[原市场来源](https://github.com/skyelan1999/aide/tree/4dc9a7b0b01fef6ac3550b0b0fcf97db42d45f94/plugins/computer-control)一致。
 
 ## 能力
 
