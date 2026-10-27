@@ -1,14 +1,15 @@
 """Exercise real Win32/UIA in a disposable WinForms fixture; never user's apps."""
-import base64,json,os,pathlib,subprocess,tempfile,time,urllib.request,io
+import base64,json,os,pathlib,subprocess,tempfile,time,urllib.request,io,argparse
 from PIL import Image
 ROOT=pathlib.Path(__file__).resolve().parents[1]
+parser=argparse.ArgumentParser();parser.add_argument('--transport',choices=('amd64','386'),default='amd64');args=parser.parse_args()
 helper=ROOT/'dist/AideComputerDesktop.exe'
 with tempfile.TemporaryDirectory(prefix='aide desktop fixture ') as tmp:
  info=pathlib.Path(tmp)/'fixture.json'
  proc=subprocess.Popen([str(ROOT/'dist/DesktopFixture.exe'),str(info)])
  pathlib.Path(tmp,'compose.yaml').write_text('services: {}')
  token='t'*64;pathlib.Path(tmp,'.env').write_text('AIDE_COMPUTER_BRIDGE_TOKEN='+token+'\n')
- server=subprocess.Popen([str(ROOT/'dist/AideComputerBridge-windows-amd64.exe'),'--aide-dir',tmp],stdout=subprocess.DEVNULL)
+ server=subprocess.Popen([str(ROOT/('dist/AideComputerBridge-windows-'+args.transport+'.exe')),'--aide-dir',tmp],stdout=subprocess.DEVNULL)
  time.sleep(1)
  def state():
   for _ in range(50):

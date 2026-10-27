@@ -9,7 +9,7 @@ Aide 插件与宿主桥接分开分发。新版增加 Windows 原生桥接，安
 See [Windows installation and compatibility](docs/windows.md). Download the plugin ZIP and the matching precompiled host ZIP from [v1.2.0](https://github.com/skyelan1999/aide-pkg-ComputerControl/releases/tag/v1.2.0).
 
 1. Install Computer Control 1.2.0 from the market or plugin ZIP. Allow process names such as `notepad`, `msedge`, `chrome` (optional `.exe`). Empty allowlists deny access.
-2. Extract the Windows host ZIP, keeping both EXEs together, and run `start.cmd`. Select the Aide installation folder to pair the dedicated token in `.env`, then restart Aide once. No host Go/Node/Python/compiler or PowerShell installation is needed.
+2. Extract the Windows host ZIP, keeping both EXEs together, and run `AideComputerBridge.exe` (or `start.cmd`). Select the Aide installation folder to pair the dedicated token in `.env`, then restart Aide once. No host Go/Node/Python/compiler or PowerShell installation is needed.
 3. Keep the bridge console open and put an allowed application in the foreground. Closing the bridge stops desktop access.
 
 Windows 目标为 Windows 10/11、Server 2016+ Desktop Experience 的已解锁交互会话；需桌面 .NET Framework 4.6.2+（建议 4.8）。锁屏、UAC 安全桌面、Session 0、Server Core 及系统阻止的提权窗口不支持控制。AMD64、32 位及 ARM64 传输程序分别提供；ARM 设备需系统的 x86/.NET 兼容支持。具体执行过的 CI 和尚未实机验证的系统见 [验证记录](docs/release-verification.json)。
