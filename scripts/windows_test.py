@@ -29,7 +29,10 @@ with tempfile.TemporaryDirectory(prefix='aide desktop fixture ') as tmp:
   result=request('snapshot');assert base64.b64decode(result['imageBase64']).startswith(b'\x89PNG\r\n\x1a\n')
   request('click',x=data['x'],y=data['y'],approved=True)
   request('type',text=' 中文 Ω',approved=True)
-  time.sleep(.3);assert '中文 Ω' in state()['text'],state()
+  for _ in range(50):
+   if '中文 Ω' in state()['text']:break
+   time.sleep(.1)
+  else:raise AssertionError({'fixture':state(),'controls':request('inspect')})
   request('key',key='BACKSPACE',approved=True)
   outside=subprocess.run([str(helper),'--request'],input=json.dumps({'action':'click','allowedApps':[data['process']],'approved':True,'x':-30000,'y':-30000}),text=True,encoding='utf-8',capture_output=True,timeout=12)
   assert not json.loads(outside.stdout)['ok']

@@ -182,9 +182,11 @@ func configureToken(dir string) (string, error) {
 	const key = "AIDE_COMPUTER_BRIDGE_TOKEN="
 	lines := strings.Split(strings.ReplaceAll(string(data), "\r\n", "\n"), "\n")
 	for _, line := range lines {
-		line = strings.TrimSpace(line)
-		if strings.HasPrefix(line, key) {
-			token := strings.Trim(strings.TrimSpace(strings.TrimPrefix(line, key)), "\"'")
+		line = strings.TrimSpace(strings.TrimPrefix(line, "\ufeff"))
+		line = strings.TrimPrefix(line, "export ")
+		parts := strings.SplitN(line, "=", 2)
+		if len(parts) == 2 && strings.TrimSpace(parts[0]) == strings.TrimSuffix(key, "=") {
+			token := strings.Trim(strings.TrimSpace(parts[1]), "\"'")
 			if len(token) >= 32 {
 				return token, nil
 			}

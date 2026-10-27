@@ -77,7 +77,7 @@ public static class DesktopBridge {
   }
   if(action=="key"){
    var keys=new Dictionary<string,ushort>{{"ENTER",13},{"TAB",9},{"ESCAPE",27},{"BACKSPACE",8},{"DELETE",46},{"UP",38},{"DOWN",40},{"LEFT",37},{"RIGHT",39},{"SPACE",32}};
-   string key=Text(r,"key");if(key==null||!keys.ContainsKey(key))throw new InvalidOperationException("unsupported_key");Inject(h,new[]{Key(keys[key],0,0),Key(keys[key],0,2)});result["key"]=key;return result;
+   string key=Text(r,"key");if(key==null||!keys.ContainsKey(key))throw new InvalidOperationException("unsupported_key");uint extended=(key=="DELETE"||key=="UP"||key=="DOWN"||key=="LEFT"||key=="RIGHT")?1u:0u;Inject(h,new[]{Key(keys[key],0,extended),Key(keys[key],0,extended|2)});result["key"]=key;return result;
   }
   throw new InvalidOperationException("unsupported_operation");
  }
@@ -88,7 +88,7 @@ public static class DesktopBridge {
    var b=c.BoundingRectangle;
    string value=null;object pattern;
    if(node.TryGetCurrentPattern(ValuePattern.Pattern,out pattern))value=((ValuePattern)pattern).Current.Value;
-   if(!b.IsEmpty&&!Double.IsInfinity(b.X)&&!Double.IsInfinity(b.Y))controls.Add(new {name=Limit(c.Name),automationId=Limit(c.AutomationId),role=c.ControlType.ProgrammaticName,text=Limit(value),enabled=c.IsEnabled,rect=new{x=b.X,y=b.Y,width=b.Width,height=b.Height},center=new{x=b.X+b.Width/2,y=b.Y+b.Height/2}});
+   if(!b.IsEmpty&&!Double.IsInfinity(b.X)&&!Double.IsInfinity(b.Y))controls.Add(new {name=Limit(c.Name),automationId=Limit(c.AutomationId),role=c.ControlType.ProgrammaticName,text=Limit(value),enabled=c.IsEnabled,hasKeyboardFocus=c.HasKeyboardFocus,rect=new{x=b.X,y=b.Y,width=b.Width,height=b.Height},center=new{x=b.X+b.Width/2,y=b.Y+b.Height/2}});
    var child=TreeWalker.ControlViewWalker.GetFirstChild(node);
    while(child!=null&&controls.Count<300){Walk(child,depth+1,controls);child=TreeWalker.ControlViewWalker.GetNextSibling(child);}
   }catch(ElementNotAvailableException){}catch(InvalidOperationException){}

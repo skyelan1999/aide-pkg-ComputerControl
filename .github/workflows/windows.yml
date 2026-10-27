@@ -11,15 +11,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with:
-          go-version: '1.26'
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
+      - name: Verify preinstalled development tools
+        shell: cmd
+        run: |
+          go version
+          node --version
+          python --version
       - name: Build native hosts without PowerShell
         shell: cmd
         run: windows\build.cmd

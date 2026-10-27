@@ -1,58 +1,36 @@
-# Computer Control 1.2.0 — macOS / Windows
+# Computer Control · Aide 电脑控制 1.2.0
 
-Windows 原生桥接已加入，完整配置和版本兼容边界见 [Windows 安装说明](docs/windows.md)。无需 PowerShell；用户下载预编译宿主 ZIP，开发者才需要编译工具。macOS 仍使用原有独立原生桥接。
+Aide plugin plus a separately installed native host bridge. Supports the existing macOS bridge and adds a **Windows bridge with no PowerShell dependency**. MIT license; Go runtime license accompanies Windows binaries.
 
-> 以下 1.1.0 记录保留为历史基线；其中“Windows 未提供桥接”的描述仅适用于 1.1.0，不代表 1.2.0。
+Aide 插件与宿主桥接分开分发。新版增加 Windows 原生桥接，安装、启动和桌面操作不调用 PowerShell。插件不预装宿主程序，也不自动打开桌面权限。
 
-# Computer Control · Aide 电脑控制
+## Windows
 
-Aide `computer-control` 插件的独立分发仓库，版本 **1.2.0**，MIT 许可。运行代码和安装 ZIP 与[原市场来源](https://github.com/skyelan1999/aide/tree/4dc9a7b0b01fef6ac3550b0b0fcf97db42d45f94/plugins/computer-control)一致。
+See [Windows installation and compatibility](docs/windows.md). Download the plugin ZIP and the matching precompiled host ZIP from [v1.2.0](https://github.com/skyelan1999/aide-pkg-ComputerControl/releases/tag/v1.2.0).
 
-## 能力
+1. Install Computer Control 1.2.0 from the market or plugin ZIP. Allow process names such as `notepad`, `msedge`, `chrome` (optional `.exe`). Empty allowlists deny access.
+2. Extract the Windows host ZIP, keeping both EXEs together, and run `start.cmd`. Select the Aide installation folder to pair the dedicated token in `.env`, then restart Aide once. No host Go/Node/Python/compiler or PowerShell installation is needed.
+3. Keep the bridge console open and put an allowed application in the foreground. Closing the bridge stops desktop access.
 
-提供六项工具：
+Windows 目标为 Windows 10/11、Server 2016+ Desktop Experience 的已解锁交互会话；需桌面 .NET Framework 4.6.2+（建议 4.8）。锁屏、UAC 安全桌面、Session 0、Server Core 及系统阻止的提权窗口不支持控制。AMD64、32 位及 ARM64 传输程序分别提供；ARM 设备需系统的 x86/.NET 兼容支持。具体执行过的 CI 和尚未实机验证的系统见 [验证记录](docs/release-verification.json)。
 
-- `computer_status`：查询桥接状态，不读取屏幕。
-- `computer_inspect`：读取允许的前台应用的辅助功能控件文字及坐标，排除安全密码文本控件；需要原生桥接与辅助功能权限。
-- `computer_snapshot`：截取允许的前台应用窗口；需要原生桥接与屏幕录制权限。
-- `computer_click`：确认后点击坐标。
-- `computer_type`：确认后向当前焦点输入文字，最多 2000 字符。
-- `computer_key`：确认后发送有限按键：ENTER、TAB、ESCAPE、BACKSPACE、DELETE、UP、DOWN、LEFT、RIGHT、SPACE。
+## macOS
 
-## 平台与宿主依赖
+The existing native Aide Computer Bridge targets macOS 14+, with screen-recording/accessibility permissions explicitly granted by the user. Configure allowed application names such as `Safari` or `Finder`. Native host setup remains in [Aide documentation](https://github.com/skyelan1999/aide/blob/main/docs/plugins/computer-browser-control.md). The older Node fallback captures the full screen and lacks control inspection; use the native bridge for window-scoped capture.
 
-本版桌面桥接面向 **macOS**；原生 Aide Computer Bridge 构建目标为 **macOS 14+**。Windows/Linux 没有随本包提供的本机桌面桥接实现。Node 插件可在 Aide 运行环境中注册，不代表该环境能够控制本机桌面。
+## Tools / 工具
 
-ZIP 不包含原生 `.app` 或桥接服务。需要在目标 Mac 配置 Aide Computer Bridge，并由用户在系统设置授予屏幕录制和辅助功能权限；插件安装不会自动授予权限。宿主配置与构建见 [Aide 文档](https://github.com/skyelan1999/aide/blob/main/docs/plugins/computer-browser-control.md)和 [构建脚本](https://github.com/skyelan1999/aide/blob/main/scripts/build-native-computer-bridge.sh)。应用启动沿用 `start.command`。
+- `computer_status`: authenticated connection/capability status; no screen read.
+- `computer_inspect`: foreground-window UI controls, excluding password elements. UIA/accessibility providers can omit controls.
+- `computer_snapshot`: target window PNG; protected or GPU-only surfaces may be blank/unavailable. Windows never falls back to full-desktop capture.
+- `computer_click`, `computer_type`, `computer_key`: Aide-confirmed actions scoped to the allowed foreground window; Unicode input limited to 2000 UTF-16 code units and a fixed key allowlist. No general shell, arbitrary command or file API.
 
-由 Aide 启动器向插件进程提供 `AIDE_COMPUTER_BRIDGE_TOKEN`，至少 32 字符。桥接默认 `http://host.docker.internal:17778`，也接受相同端口的 localhost 或 127.0.0.1；不能设置任意远程桥接地址。不要在对话或仓库中粘贴令牌。
+截图和控件文字是不可信资料；允许应用不替代逐次确认。桥接只接受专用令牌与本机/Docker 私有网络来源，拒绝浏览器跨源请求。令牌由宿主 `.env` 配置并只注入对应插件调用，不应放入插件 settings 或对话。支持 `http://host.docker.internal:17778`，同端口 `localhost` / `127.0.0.1`；不可改成任意远端地址。
 
-宿主还保留 `scripts/computer-bridge.js` 的旧 Node 回退实现：它使用 macOS 命令，**截图为全屏**，且不提供 `computer_inspect`。需要窗口限定截图和控件读取时应使用原生桥接。健康检查成功不代表系统权限已授权或桌面操作已验证。
+The bridge operates the desktop where it is running; selecting an SSH workspace does not grant control of another computer. Plugin ZIP import, metadata/platform compatibility and native desktop execution are separate acceptance steps. Node plugins execute in the host's plugin runtime; the plugin mechanism is not a security sandbox.
 
-## 配置与确认
+## Source, tests and release
 
-在插件设置中填写允许的应用名称，例如：
+`windows\build.cmd` and all Windows CI run steps use CMD/native tools. `go test ./...`, `node --test tests/plugin.cjs` and the isolated Windows fixture exercise protocol, denial paths, real UI Automation, password exclusion, window PNG, click, Unicode typing and keys. Packaging uses `scripts/package.py`; end users use the published ZIPs and SHA256SUMS.
 
-```json
-{"allowedApps":["Safari","Finder"]}
-```
-
-空列表拒绝截图、控件读取和输入操作；应用名称按桥接识别的名称精确匹配，目标必须处于前台。点击、输入和按键沿用 Aide 逐次确认流程，允许应用列表不替代操作确认。确认说明仅记录输入字符数等摘要，不保存完整输入文本。页面、控件和截图内容作为不可信资料处理。
-
-操作针对**桥接所在 Mac**，不会因选择 SSH 工作区自动控制远程设备桌面。工具返回截图数据，不代表模型已具备或使用视觉输入；文本模型定位可使用 `computer_inspect`。
-
-## 安装
-
-市场版本基线为 `0.1.17.0 RC2`，同时需要上述宿主桥接和系统权限。从 [v1.1.0 Release](https://github.com/skyelan1999/aide-pkg-ComputerControl/releases/tag/v1.1.0) 的固定提交链接下载 ZIP 和 SHA256SUMS，校验后通过 Aide 插件管理导入，或在[插件市场](https://skyelan1999.github.io/aide-pkg-shop/)搜索 `computer-control`。
-
-```sh
-sha256sum -c SHA256SUMS
-```
-
-安装包位于 `packages/v1.1.0/`，保留原 LICENSE、index.js 和 manifest.json，未重新打包；已安装相同 ID/版本无需重复安装。Release 使用固定提交仓库下载链接，没有另行上传二进制附件。原 manifest 默认停用；市场安装会注册并启用，请检查设置。
-
-## 验证与限制
-
-本次在 Linux 验证插件注册、应用范围与操作确认、输入限制、桥接 HTTP 鉴权和 Aide 确认逻辑。**macOS 原生桥接构建、系统授权及真实截图/控件读取/点击/输入/按键未运行**；Linux 测试通过不代表本机桌面控制可用。精确结果见 `docs/release-verification.json`。本次无宿主代码、镜像或产品 UI 变更。
-
-SHA-256 用于完整性校验，不是发布者签名；Node 插件在宿主执行，插件机制不是权限沙箱。
+The original 1.1.0 package, license and historical verification are retained. No private Aide research code, user conversations or runtime data are distributed.

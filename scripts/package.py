@@ -14,6 +14,7 @@ for arch in ('amd64','386','arm64'):
   z.write(ROOT/'windows/start.cmd','start.cmd')
   z.write(ROOT/'docs/windows.md','README.md')
   z.write(ROOT/'LICENSE','LICENSE')
+  z.write(ROOT/'windows/GO-LICENSE','GO-LICENSE')
 files=sorted(OUT.glob('*.zip'))
 for p in files:
  with zipfile.ZipFile(p) as z:assert z.testzip() is None
