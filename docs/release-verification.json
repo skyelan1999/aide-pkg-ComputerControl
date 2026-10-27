@@ -1,68 +1,76 @@
 {
-  "version": "1.1.0",
-  "zipBytes": 3195,
-  "zipSHA256": "c180fa73a929db8d59d2c96194396d0d6940eb1b04c07243a50edf46a4b23dbe",
-  "zipEqualsExistingMarket": true,
-  "runtimeSourceUnchanged": true,
-  "aideCommit": "1ca8d1027c0a63849ce977a1fa8f13da48e04adf",
-  "hostEntry": {
-    "ok": true,
-    "name": "computer-control"
+  "version": "1.2.0",
+  "date": "2026-10-28",
+  "powershellDependency": false,
+  "build": {
+    "transport": "Go 1.26 standard library, CGO disabled",
+    "desktop": "System .NET Framework C# compiler; Win32, GDI and UI Automation; no NuGet dependencies",
+    "targets": [
+      "windows/amd64",
+      "windows/386",
+      "windows/arm64"
+    ]
   },
-  "hostTools": [
-    {
-      "name": "computer_status",
-      "executable": true
-    },
-    {
-      "name": "computer_inspect",
-      "executable": true
-    },
-    {
-      "name": "computer_snapshot",
-      "executable": true
-    },
-    {
-      "name": "computer_click",
-      "executable": true
-    },
-    {
-      "name": "computer_type",
-      "executable": true
-    },
-    {
-      "name": "computer_key",
-      "executable": true
-    }
+  "nativeAcceptance": {
+    "status": "PASS",
+    "run": "https://github.com/skyelan1999/aide-pkg-ComputerControl/actions/runs/40539853842",
+    "commit": "a4826265df4ba10a561d3fac72cbd9df7e5b7ee9",
+    "environments": [
+      "GitHub Windows Server 2022 interactive runner",
+      "GitHub Windows Server 2025 interactive runner"
+    ],
+    "transportsExecuted": [
+      "amd64",
+      "386"
+    ],
+    "coverage": [
+      "Actual HTTP server + separate native helper + owned WinForms window",
+      "Foreground allowlist denial",
+      "UI Automation text and password-element exclusion",
+      "PNG decoded and known window paint pixels verified",
+      "Physical UIA coordinate click",
+      "Unicode text read back from fixture",
+      "Backspace effect read back",
+      "Out-of-window click denial",
+      "No PowerShell invocation in repository build/start/runtime paths"
+    ]
+  },
+  "protocolAndPlugin": {
+    "status": "PASS",
+    "commands": [
+      "go test ./...",
+      "node --test tests/plugin.cjs"
+    ],
+    "coverage": [
+      "authentication",
+      "network/origin restrictions",
+      "body limits and route/action binding",
+      "confirmation required",
+      "allowed app required",
+      "key allowlist",
+      "preserved pairing configuration",
+      "plugin approval forwarding and fixed bridge addresses"
+    ]
+  },
+  "compatibilityTargets": [
+    "Windows 10/11 with desktop .NET Framework 4.6.2+",
+    "Windows Server 2016+ Desktop Experience in an unlocked interactive session"
   ],
-  "pluginAndBridgeLogic": {
-    "status": "PASS",
-    "command": "node scripts/computer-control-check.cjs",
-    "coverage": "App allowlist, coordinate/key boundaries, six-tool registration, empty app list denied, unapproved click denied, missing token denied, text/key bounds"
-  },
-  "bridgeHTTP": {
-    "status": "PASS",
-    "command": "node /tmp/computer-control-http-check.cjs",
-    "coverage": "Disposable legacy Node bridge; authenticated health; missing/wrong token denied; unknown route rejected; empty allowedApps rejected before invoking OS commands",
-    "desktopOperationsExecuted": false
-  },
-  "nativeConfirmationRegression": {
-    "status": "PASS",
-    "command": "go test -race ./internal/server -run '^TestComputer(ToolConfirmationBoundary|ConfirmationDoesNotStoreTypedContent)$' -count=1",
-    "tests": 2,
-    "coverage": "Click/type/key require confirmation; typed content excluded from persisted confirmation text"
-  },
-  "platforms": {
-    "linux": "Plugin logic/protocol tests only; no Linux desktop bridge supplied",
-    "macos": "Supported bridge platform; native build, OS permissions, screenshot/inspect/click/type/key NOT_RUN",
-    "windows": "No Windows desktop bridge supplied; NOT_RUN"
-  },
-  "distributionPlatformCorrection": "Market platforms narrowed from windows/macos/linux to macos; native bridge targets macOS14+",
-  "limitations": [
-    "ZIP contains only Node plugin entry/manifest/license; native app and token must be configured by Aide host",
-    "Native screenshot targets allowed app window; legacy Node fallback captures full screen and lacks inspect",
-    "No full start.command activation or host image release in this task"
+  "notRun": [
+    "Windows 10/11 on user hardware",
+    "Windows Server 2016/2019",
+    "Native ARM64 hardware and its x86/.NET compatibility",
+    "Multi-monitor/mixed-DPI hardware",
+    "macOS native desktop regression",
+    "User Docker Desktop/firewall/container-to-host pairing on each Windows release"
   ],
-  "ui": "Not applicable: no product UI changes",
-  "rollback": "Revert market metadata; runtime ZIP unchanged; no data/service changes"
+  "limits": [
+    "No secure/UAC/lock desktop, Session 0 or Server Core control",
+    "Normal integrity; no elevation or protection bypass",
+    "Protected/GPU surfaces may be blank or unavailable; no full-screen fallback",
+    "Transport architecture builds do not imply native hardware acceptance",
+    "Plugin and native host are separate downloads; Aide main source/private data/9999 unchanged"
+  ],
+  "previousVerification": "docs/release-verification-1.1.0.json",
+  "releaseIdentity": "Release package proof records the exact final checked-out commit, ZIPs, native binary hashes and runner. Documentation/test-only follow-up commits require their own CI before publication."
 }

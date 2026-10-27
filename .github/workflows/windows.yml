@@ -39,10 +39,18 @@ jobs:
           python scripts/windows_test.py --transport amd64
           if errorlevel 1 exit /b 1
           python scripts/windows_test.py --transport 386
+      - name: Package verified public release candidates
+        shell: cmd
+        run: python scripts/package.py
       - uses: actions/upload-artifact@v4
         with:
           name: windows-hosts-${{ matrix.os }}
           path: |
             dist/AideComputerBridge-windows-*.exe
             dist/AideComputerDesktop.exe
+          retention-days: 5
+      - uses: actions/upload-artifact@v4
+        with:
+          name: computer-control-release-${{ matrix.os }}
+          path: dist/release/*
           retention-days: 5
