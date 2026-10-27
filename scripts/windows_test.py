@@ -32,7 +32,7 @@ with tempfile.TemporaryDirectory(prefix='aide desktop fixture ') as tmp:
   point={k:int(round(editor['center'][k])) for k in ('x','y')}
   result=request('snapshot');png=base64.b64decode(result['imageBase64']);assert png.startswith(b'\x89PNG\r\n\x1a\n')
   with Image.open(io.BytesIO(png)) as image:
-   assert sum(1 for pixel in image.convert('RGB').getdata() if pixel==(24,73,112))>1000,'Window paint was not captured'
+   assert sum(1 for pixel in image.convert('RGB').get_flattened_data() if pixel==(24,73,112))>1000,'Window paint was not captured'
   request('click',x=point['x'],y=point['y'],approved=True)
   request('type',text=' 中文 Ω',approved=True)
   for _ in range(50):

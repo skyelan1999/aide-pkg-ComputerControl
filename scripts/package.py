@@ -3,7 +3,7 @@ from pathlib import Path
 import hashlib,json,zipfile,struct,subprocess,os
 ROOT=Path(__file__).resolve().parents[1]
 OUT=ROOT/'dist/release';OUT.mkdir(parents=True,exist_ok=True)
-version=json.loads((ROOT/'manifest.json').read_text())['version']
+version=json.loads((ROOT/'manifest.json').read_text(encoding='utf-8'))['version']
 def add(z,path,name):
  info=zipfile.ZipInfo(name,(2026,1,1,0,0,0));info.compress_type=zipfile.ZIP_DEFLATED;info.external_attr=0o100644<<16
  z.writestr(info,path.read_bytes())
