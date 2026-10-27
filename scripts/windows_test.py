@@ -1,5 +1,6 @@
 """Exercise real Win32/UIA in a disposable WinForms fixture; never user's apps."""
-import base64,json,os,pathlib,subprocess,tempfile,time,urllib.request
+import base64,json,os,pathlib,subprocess,tempfile,time,urllib.request,io
+from PIL import Image
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 helper=ROOT/'dist/AideComputerDesktop.exe'
 with tempfile.TemporaryDirectory(prefix='aide desktop fixture ') as tmp:
@@ -28,14 +29,20 @@ with tempfile.TemporaryDirectory(prefix='aide desktop fixture ') as tmp:
   assert 'fixture initial' in json.dumps(result),result
   editor=next(c for c in result['controls'] if c.get('text')=='fixture initial')
   point={k:int(round(editor['center'][k])) for k in ('x','y')}
-  result=request('snapshot');assert base64.b64decode(result['imageBase64']).startswith(b'\x89PNG\r\n\x1a\n')
+  result=request('snapshot');png=base64.b64decode(result['imageBase64']);assert png.startswith(b'\x89PNG\r\n\x1a\n')
+  with Image.open(io.BytesIO(png)) as image:
+   assert sum(1 for pixel in image.convert('RGB').getdata() if pixel==(24,73,112))>1000,'Window paint was not captured'
   request('click',x=point['x'],y=point['y'],approved=True)
   request('type',text=' 中文 Ω',approved=True)
   for _ in range(50):
    if '中文 Ω' in state()['text']:break
    time.sleep(.1)
   else:raise AssertionError({'fixture':state(),'controls':request('inspect')})
-  request('key',key='BACKSPACE',approved=True)
+  before=state()['text'];request('key',key='BACKSPACE',approved=True)
+  for _ in range(50):
+   if state()['text']!=before:break
+   time.sleep(.1)
+  else:raise AssertionError('Backspace was not delivered to the fixture')
   outside=subprocess.run([str(helper),'--request'],input=json.dumps({'action':'click','allowedApps':[data['process']],'approved':True,'x':-30000,'y':-30000}),text=True,encoding='utf-8',capture_output=True,timeout=12)
   assert not json.loads(outside.stdout)['ok']
   print('PASS: real Windows fixture inspect/password exclusion/window PNG/click/Unicode input/key/out-of-window denial')
